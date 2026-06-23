@@ -1,0 +1,47 @@
+name: Mark Studied
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Ação solicitada pela interface"
+        required: true
+        default: "mark_studied"
+
+permissions:
+  contents: write
+
+jobs:
+  mark:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.action == 'mark_studied' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Mark current task as studied
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("data/tasks.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          current = data.get("current_task", {})
+          current["status"] = "studied"
+          data["current_task"] = current
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "codex-bot"
+          git config user.email "codex-bot@users.noreply.github.com"
+          git add data/tasks.json
+          git commit -m "Mark task as studied"
+          git push
