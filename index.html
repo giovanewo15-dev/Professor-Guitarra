@@ -563,6 +563,12 @@
       const node = el(id);
       if (node) node.style[prop] = value;
     };
+    const setFeedback = (message, variant = 'feedback') => {
+      const node = el('feedback');
+      if (!node) return;
+      node.className = variant;
+      node.textContent = message;
+    };
 
     function loadState() {
       try {
@@ -724,24 +730,20 @@
 
     function sendAnswer() {
       const state = loadState();
-      const tech = el('techAnswer').value.trim();
-      const theory = el('theoryAnswer').value.trim();
-      const bpm = el('bpmAnswer').value.trim();
-      const goal = el('goalAnswer').value.trim();
-      const feedback = el('feedback');
+      const tech = el('techAnswer')?.value.trim() || '';
+      const theory = el('theoryAnswer')?.value.trim() || '';
+      const bpm = el('bpmAnswer')?.value.trim() || '';
+      const goal = el('goalAnswer')?.value.trim() || '';
 
       if (!tech && !theory && !bpm && !goal) {
-        feedback.className = 'feedback warn';
-        feedback.textContent = 'Escreva alguma resposta antes de enviar.';
+        setFeedback('Escreva alguma resposta antes de enviar.', 'feedback warn');
         return;
       }
 
       if (!tech || !theory || !bpm || !goal) {
-        feedback.className = 'feedback warn';
-        feedback.textContent = 'Para fechar o diagnóstico, eu preciso das quatro respostas: técnica, BPM, teoria e objetivo.';
+        setFeedback('Para fechar o diagnóstico, eu preciso das quatro respostas: técnica, BPM, teoria e objetivo.', 'feedback warn');
       } else {
-        feedback.className = 'feedback success';
-        feedback.textContent = 'Resposta registrada. Continue até concluir o diagnóstico.';
+        setFeedback('Resposta registrada. Continue até concluir o diagnóstico.', 'feedback success');
       }
 
       if (tech) state.answers.push({ kind: 'tech', value: tech });
@@ -758,15 +760,13 @@
 
     function finishDiagnostic() {
       const state = loadState();
-      const feedback = el('feedback');
-      const tech = el('techAnswer').value.trim();
-      const theory = el('theoryAnswer').value.trim();
-      const bpm = el('bpmAnswer').value.trim();
-      const goal = el('goalAnswer').value.trim();
+      const tech = el('techAnswer')?.value.trim() || '';
+      const theory = el('theoryAnswer')?.value.trim() || '';
+      const bpm = el('bpmAnswer')?.value.trim() || '';
+      const goal = el('goalAnswer')?.value.trim() || '';
 
       if (!tech || !theory || !bpm || !goal) {
-        feedback.className = 'feedback warn';
-        feedback.textContent = 'Ainda faltam respostas para fechar o diagnóstico.';
+        setFeedback('Ainda faltam respostas para fechar o diagnóstico.', 'feedback warn');
         return;
       }
 
@@ -777,42 +777,38 @@
         text: 'Diagnóstico fechado. A partir daqui, a rotina de estudos passa a seguir o ponto de partida definido pelas respostas.'
       });
       saveState(state);
-      feedback.className = 'feedback success';
-      feedback.textContent = 'Diagnóstico concluído. O plano foi liberado.';
+      setFeedback('Diagnóstico concluído. O plano foi liberado.', 'feedback success');
       updateDiagnosticUI();
     }
 
     function resetDiagnostic() {
       localStorage.removeItem(STORAGE_KEY);
-      el('techAnswer').value = '';
-      el('theoryAnswer').value = '';
-      el('bpmAnswer').value = '';
-      el('goalAnswer').value = '';
+      const tech = el('techAnswer'); if (tech) tech.value = '';
+      const theory = el('theoryAnswer'); if (theory) theory.value = '';
+      const bpm = el('bpmAnswer'); if (bpm) bpm.value = '';
+      const goal = el('goalAnswer'); if (goal) goal.value = '';
       const feedbackReset = el('feedback');
-      if (feedbackReset) feedbackReset.textContent = '';
+      if (feedbackReset) {
+        feedbackReset.className = 'feedback';
+        feedbackReset.textContent = '';
+      }
       updateDiagnosticUI();
     }
 
     el('startDiagnosticBtn').addEventListener('click', () => {
       const techAnswer = el('techAnswer');
       if (techAnswer) techAnswer.focus();
-      const feedbackStart = el('feedback');
-      if (feedbackStart) feedbackStart.className = 'feedback';
-      if (feedbackStart) feedbackStart.textContent = 'Responda com calma. Quanto mais preciso, melhor o plano.';
+      setFeedback('Responda com calma. Quanto mais preciso, melhor o plano.', 'feedback');
     });
     el('sendAnswerBtn').addEventListener('click', sendAnswer);
     el('finishDiagnosticBtn').addEventListener('click', finishDiagnostic);
     el('resetDiagnosticBtn').addEventListener('click', resetDiagnostic);
     el('refreshBtn').addEventListener('click', () => refreshUI().catch((error) => {
-      const feedbackRefresh = el('feedback');
-      if (feedbackRefresh) feedbackRefresh.className = 'feedback warn';
-      if (feedbackRefresh) feedbackRefresh.textContent = error.message;
+      setFeedback(error.message, 'feedback warn');
     }));
 
     refreshUI().catch((error) => {
-      const feedbackBoot = el('feedback');
-      if (feedbackBoot) feedbackBoot.className = 'feedback warn';
-      if (feedbackBoot) feedbackBoot.textContent = error.message;
+      setFeedback(error.message, 'feedback warn');
     });
   </script>
 </body>
