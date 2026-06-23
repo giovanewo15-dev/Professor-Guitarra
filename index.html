@@ -551,6 +551,18 @@
     ];
 
     const el = (id) => document.getElementById(id);
+    const setText = (id, value) => {
+      const node = el(id);
+      if (node) node.textContent = value;
+    };
+    const setHTML = (id, value) => {
+      const node = el(id);
+      if (node) node.innerHTML = value;
+    };
+    const setStyle = (id, prop, value) => {
+      const node = el(id);
+      if (node) node.style[prop] = value;
+    };
 
     function loadState() {
       try {
@@ -602,32 +614,32 @@
     }
 
     function renderStepper(state) {
-      el('stepper').innerHTML = diagnosticSteps.map((label, index) => {
+      setHTML('stepper', diagnosticSteps.map((label, index) => {
         const active = index <= state.step ? 'active' : '';
         return `<span class="step ${active}">${label}</span>`;
-      }).join('');
+      }).join(''));
     }
 
     function renderConversation(state) {
-      el('chatbox').innerHTML = state.conversation.map((msg) => {
+      setHTML('chatbox', state.conversation.map((msg) => {
         return `<div class="chat-message ${msg.role}">${escapeHtml(msg.text)}</div>`;
-      }).join('');
+      }).join(''));
     }
 
     function updateDiagnosticUI() {
       const state = loadState();
       renderStepper(state);
       renderConversation(state);
-      el('diagnosticNote').textContent = state.complete
+      setText('diagnosticNote', state.complete
         ? 'Diagnóstico concluído. Você pode revisar suas respostas ou recomeçar se quiser.'
-        : currentPrompt(state.step);
+        : currentPrompt(state.step));
       const level = state.level || deriveLevel(state);
-      el('studentLevel').textContent = level.summary || '-';
-      el('nextStep').textContent = level.focus || '-';
-      el('planNote').textContent = state.complete
+      setText('studentLevel', level.summary || '-');
+      setText('nextStep', level.focus || '-');
+      setText('planNote', state.complete
         ? 'A rotina abaixo foi montada com base no diagnóstico salvo localmente neste navegador.'
-        : 'Conclua o diagnóstico para liberar um plano inicial personalizado.';
-      document.getElementById('dailyContent').style.opacity = state.complete ? '1' : '0.55';
+        : 'Conclua o diagnóstico para liberar um plano inicial personalizado.');
+      setStyle('dailyContent', 'opacity', state.complete ? '1' : '0.55');
     }
 
     function escapeHtml(text) {
@@ -688,16 +700,16 @@
       const history = data.history || [];
       const level = data.student_level || {};
 
-      el('taskDate').textContent = current.generated_at || '-';
-      el('taskStatus').textContent = current.status === 'studied' ? 'Concluído' : 'Pendente';
-      el('taskStatus').style.color = current.status === 'studied' ? 'var(--accent)' : 'var(--warning)';
-      el('studentLevel').textContent = level.summary || '-';
-      el('nextStep').textContent = data.next_pedagogical_step || '-';
-      el('dayNote').textContent = current.message || 'Conteúdo do dia';
+      setText('taskDate', current.generated_at || '-');
+      setText('taskStatus', current.status === 'studied' ? 'Concluído' : 'Pendente');
+      setStyle('taskStatus', 'color', current.status === 'studied' ? 'var(--accent)' : 'var(--warning)');
+      setText('studentLevel', level.summary || '-');
+      setText('nextStep', data.next_pedagogical_step || '-');
+      setText('dayNote', current.message || 'Conteúdo do dia');
 
-      el('technicalBlock').innerHTML = renderBlock(current.technical);
-      el('theoryBlock').innerHTML = renderBlock(current.theory);
-      el('historyList').innerHTML = renderList(history);
+      setHTML('technicalBlock', renderBlock(current.technical));
+      setHTML('theoryBlock', renderBlock(current.theory));
+      setHTML('historyList', renderList(history));
 
       const chips = [];
       if (current.topic) chips.push(current.topic);
@@ -705,7 +717,7 @@
       if (level.theory_stage) chips.push(`Teoria: ${level.theory_stage}`);
       if (current.status) chips.push(`Status: ${current.status === 'studied' ? 'estudado' : 'pendente'}`);
       if (state.complete) chips.push('Diagnóstico salvo');
-      el('chips').innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('');
+      setHTML('chips', chips.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join(''));
 
       updateDiagnosticUI();
     }
@@ -776,26 +788,31 @@
       el('theoryAnswer').value = '';
       el('bpmAnswer').value = '';
       el('goalAnswer').value = '';
-      el('feedback').textContent = '';
+      const feedbackReset = el('feedback');
+      if (feedbackReset) feedbackReset.textContent = '';
       updateDiagnosticUI();
     }
 
     el('startDiagnosticBtn').addEventListener('click', () => {
-      el('techAnswer').focus();
-      el('feedback').className = 'feedback';
-      el('feedback').textContent = 'Responda com calma. Quanto mais preciso, melhor o plano.';
+      const techAnswer = el('techAnswer');
+      if (techAnswer) techAnswer.focus();
+      const feedbackStart = el('feedback');
+      if (feedbackStart) feedbackStart.className = 'feedback';
+      if (feedbackStart) feedbackStart.textContent = 'Responda com calma. Quanto mais preciso, melhor o plano.';
     });
     el('sendAnswerBtn').addEventListener('click', sendAnswer);
     el('finishDiagnosticBtn').addEventListener('click', finishDiagnostic);
     el('resetDiagnosticBtn').addEventListener('click', resetDiagnostic);
     el('refreshBtn').addEventListener('click', () => refreshUI().catch((error) => {
-      el('feedback').className = 'feedback warn';
-      el('feedback').textContent = error.message;
+      const feedbackRefresh = el('feedback');
+      if (feedbackRefresh) feedbackRefresh.className = 'feedback warn';
+      if (feedbackRefresh) feedbackRefresh.textContent = error.message;
     }));
 
     refreshUI().catch((error) => {
-      el('feedback').className = 'feedback warn';
-      el('feedback').textContent = error.message;
+      const feedbackBoot = el('feedback');
+      if (feedbackBoot) feedbackBoot.className = 'feedback warn';
+      if (feedbackBoot) feedbackBoot.textContent = error.message;
     });
   </script>
 </body>
