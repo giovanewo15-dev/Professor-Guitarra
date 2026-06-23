@@ -1,0 +1,50 @@
+{
+  "student_level": {
+    "summary": "Guitarrista intermediário com lacunas teóricas; boa coordenação prática, mas base conceitual ainda em consolidação.",
+    "technical_stage": "diagnóstico inicial",
+    "theory_stage": "diagnóstico inicial",
+    "notes": "A primeira geração deve levantar o nível técnico atual e o nível teórico com perguntas objetivas antes de avançar para o conteúdo.",
+    "reference_bpm": {
+      "alternate_picking_16ths": null,
+      "scales_quarters": null
+    }
+  },
+  "current_task": {
+    "generated_at": "2026-06-23",
+    "status": "pending",
+    "topic": "Diagnóstico inicial completo",
+    "message": "Antes de avançar, confirme o ponto de partida do aluno em técnica e teoria.",
+    "technical": {
+      "paragraphs": [
+        "Diagnóstico técnico: descubra quais técnicas o aluno já domina, quais executa com segurança e quais ainda travam a fluidez.",
+        "Peça BPM aproximado para escalas, alternate picking, ligados, palhetada híbrida, sweep, string skipping, bending e vibrato.",
+        "A resposta deve separar o que ele toca em andamento confortável do que ele toca apenas em velocidade reduzida."
+      ],
+      "bullets": [
+        "Quais técnicas domina hoje?",
+        "Quais técnicas apresentam maior dificuldade?",
+        "Qual BPM consegue sustentar em semínimas, colcheias e semicolcheias?"
+      ],
+      "exercise": "Tocar uma escala de 2 oitavas com metrônomo e registrar BPM confortável, BPM limítrofe e BPM com perda de limpeza.",
+      "bpm": "Sugestão inicial: medir a zona confortável entre 60 e 90 BPM, ajustando conforme o repertório atual.",
+      "expected_result": "Em uma semana, o aluno terá uma linha de base objetiva para os próximos exercícios."
+    },
+    "theory": {
+      "paragraphs": [
+        "Diagnóstico teórico: verifique o que o aluno sabe sobre intervalos, escala maior, tríades, formação de acordes, campo harmônico e modos.",
+        "A ideia não é testar memória solta, e sim saber se ele consegue relacionar esses conceitos ao braço da guitarra.",
+        "Peça exemplos simples no instrumento: localizar uma terça maior, formar uma tríade maior e reconhecer o grau da escala."
+      ],
+      "bullets": [
+        "O que ele entende por intervalo?",
+        "Consegue montar a escala maior sem decorar casas aleatórias?",
+        "Sabe explicar como tríades viram acordes?"
+      ],
+      "exercise": "Localizar na guitarra a tônica, a terça e a quinta de uma tríade maior em três regiões do braço.",
+      "expected_result": "Ao final do diagnóstico, o sistema poderá definir a sequência pedagógica lógica sem repetir temas."
+    },
+    "historical_topics": [],
+    "history": [],
+    "next_pedagogical_step": "Após o diagnóstico, começar por intervalos e construção da escala maior."
+  }
+}
