@@ -693,6 +693,22 @@
       `;
     }
 
+    function renderLessonSection(title, content) {
+      if (!content) return '<div class="empty">Conteúdo indisponível.</div>';
+      const items = Array.isArray(content) ? content : [content];
+      return `
+        <div class="lesson">
+          <div class="lesson-title">
+            <h3>${escapeHtml(title)}</h3>
+            <span class="tag theory">Aula</span>
+          </div>
+          <div class="content">
+            ${items.map((item) => `<div>${escapeHtml(item)}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
     async function loadTasks() {
       const res = await fetch(DATA_URL, { cache: 'no-store' });
       if (!res.ok) throw new Error('Não foi possível carregar tasks.json');
@@ -705,6 +721,7 @@
       const current = data.current_task || {};
       const history = data.history || [];
       const level = data.student_level || {};
+      const lesson = current.lesson || {};
 
       setText('taskDate', current.generated_at || '-');
       setText('taskStatus', current.status === 'studied' ? 'Concluído' : 'Pendente');
@@ -713,8 +730,36 @@
       setText('nextStep', data.next_pedagogical_step || '-');
       setText('dayNote', current.message || 'Conteúdo do dia');
 
-      setHTML('technicalBlock', renderBlock(current.technical));
-      setHTML('theoryBlock', renderBlock(current.theory));
+      if (current.type === 'lesson' && lesson) {
+        setHTML(
+          'technicalBlock',
+          renderLessonSection(
+            lesson.technical?.title || 'Exercício técnico',
+            [
+              `Técnica: ${lesson.technical?.technique || 'não informada'}`,
+              ...(lesson.technical?.setup || []),
+              `Exercício: ${lesson.technical?.exercise || 'não informado'}`,
+              `Palhetada/dedilhado: ${lesson.technical?.picking || 'não informado'}`,
+              `BPM inicial: ${lesson.technical?.initial_bpm || '-'}`,
+              ...(lesson.technical?.progression || []),
+              `Resultado esperado: ${lesson.technical?.one_week_result || 'não informado'}`,
+            ]
+          )
+        );
+        setHTML(
+          'theoryBlock',
+          [
+            renderLessonSection(lesson.theory?.title || 'Base teórica', lesson.theory?.explanation || []),
+            renderLessonSection('Braço da guitarra', lesson.theory?.guitar_map || []),
+            renderLessonSection('Aplicação', lesson.theory?.application || []),
+            renderLessonSection('Fixação', lesson.theory?.fixation_exercise || []),
+            renderLessonSection('Revisão', lesson.review?.checks || []),
+          ].join('')
+        );
+      } else {
+        setHTML('technicalBlock', renderBlock(current.technical));
+        setHTML('theoryBlock', renderBlock(current.theory));
+      }
       setHTML('historyList', renderList(history));
 
       const chips = [];

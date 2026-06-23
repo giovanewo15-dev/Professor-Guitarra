@@ -1,0 +1,101 @@
+{
+  "student_level": {
+    "summary": "Guitarrista intermediário com boa execução prática e lacunas teóricas importantes.",
+    "technical_stage": "mapeado para fundamentos e consolidação",
+    "theory_stage": "mapeado para fundamentos e consolidação",
+    "notes": "O sistema deve ensinar com base curricular consolidada, usando o diagnóstico apenas como referência de ponto de partida.",
+    "reference_bpm": {
+      "alternate_picking_16ths": 92,
+      "scales_quarters": 84
+    }
+  },
+  "curriculum": {
+    "version": 1,
+    "core_order": [
+      "intervals",
+      "major_scale",
+      "triads",
+      "chord_construction",
+      "major_key_harmony",
+      "harmonization",
+      "modes"
+    ],
+    "teaching_rules": [
+      "Sempre consolidar a base antes de avançar.",
+      "Cada aula precisa explicar, demonstrar no braço, aplicar e revisar.",
+      "Nenhuma tarefa diária deve ser apenas uma lista de perguntas.",
+      "Técnica e teoria devem andar juntas quando possível."
+    ]
+  },
+  "current_task": {
+    "generated_at": "2026-06-23",
+    "status": "pending",
+    "type": "lesson",
+    "topic": "Intervalos: a base da leitura do braço",
+    "message": "Hoje vamos consolidar intervalos para enxergar o braço da guitarra com clareza.",
+    "lesson": {
+      "objective": "Entender o que é um intervalo e localizar suas formas mais úteis na guitarra.",
+      "theory": {
+        "title": "Base teórica",
+        "explanation": [
+          "Intervalo é a distância entre duas notas. Na guitarra, ele é a unidade que permite enxergar acordes, escalas e arpejos com lógica, em vez de decorar desenhos soltos.",
+          "Os intervalos mais úteis no início são: uníssono, 2a menor, 2a maior, 3a menor, 3a maior, 4a justa, trítono, 5a justa, 6a menor, 6a maior, 7a menor, 7a maior e oitava.",
+          "Se você sabe localizar a tônica e reconhecer a distância até a terça e a quinta, já começa a transformar o braço inteiro em mapa musical."
+        ],
+        "guitar_map": [
+          "Tônica na 6a corda, 5a casa: a 3a maior fica 2 casas acima e 1 corda abaixo em formato visual clássico de tríade.",
+          "Na mesma corda, a 5a justa está 7 casas acima; a oitava está 12 casas acima.",
+          "Na 4a e 3a cordas, a leitura muda de desenho, mas a distância intervalar continua a mesma."
+        ],
+        "application": [
+          "Pegue uma nota na 6a corda e encontre a mesma nota na 4a corda duas casas acima.",
+          "Compare tônica, terça maior e quinta justa em três regiões diferentes do braço.",
+          "Diga em voz alta o nome do intervalo antes de tocar."
+        ],
+        "fixation_exercise": [
+          "Escolha uma tônica e encontre: 3a maior, 3a menor, 5a justa e oitava em três cordas diferentes.",
+          "Toque e nomeie os intervalos sem olhar para diagramas prontos.",
+          "Depois, tente identificar visualmente a diferença entre a 3a maior e a 3a menor."
+        ]
+      },
+      "technical": {
+        "title": "Exercício técnico",
+        "technique": "alternate picking com controle de sincronização",
+        "setup": [
+          "Mão direita: palheta com ataque curto e constante, movimentos pequenos, sem tensão desnecessária.",
+          "Mão esquerda: dedos próximos do traste, mínima movimentação e pressão suficiente para som limpo.",
+          "A cada nota, confirme se a troca de corda está limpa antes de aumentar o andamento."
+        ],
+        "exercise": "Tocar uma sequência de intervalos em uma corda e depois expandir para duas cordas, mantendo a mesma articulação.",
+        "picking": "palhetada alternada estrita",
+        "initial_bpm": 70,
+        "progression": [
+          "Dias 1 e 2: 70 BPM com foco em limpeza.",
+          "Dias 3 e 4: subir para 74 BPM se estiver estável.",
+          "Dias 5 e 6: subir para 78 BPM mantendo relaxamento.",
+          "Dia 7: consolidar no BPM mais limpo possível, sem sacrificar precisão."
+        ],
+        "one_week_result": "Ao fim de uma semana, a coordenação entre palhetada e localização intervalar deve ficar mais confiável e menos dependente de memorização visual."
+      },
+      "review": {
+        "checks": [
+          "Consigo explicar o que muda entre terça maior e terça menor?",
+          "Consigo encontrar a oitava sem hesitar?",
+          "Consigo aplicar o mesmo raciocínio em outra tonalidade?"
+        ]
+      }
+    },
+    "historical_topics": [
+      "diagnóstico inicial"
+    ],
+    "history": [
+      {
+        "date": "2026-06-23",
+        "topic": "diagnóstico inicial",
+        "title": "Ponto de partida mapeado",
+        "status": "studied"
+      }
+    ],
+    "next_pedagogical_step": "Depois de intervalos, avançar para escala maior e sua construção."
+  }
+}

@@ -38,40 +38,43 @@ def normalize_history(data: Dict[str, Any]) -> List[Dict[str, Any]]:
 def build_prompt(data: Dict[str, Any]) -> List[Dict[str, str]]:
     current = data.get("current_task", {})
     student_level = data.get("student_level", {})
+    curriculum = data.get("curriculum", {})
     history = normalize_history(data)
     today = dt.datetime.now().astimezone().strftime("%Y-%m-%d")
 
     system = (
         "Você é um professor de guitarra e mentor pedagógico. "
-        "Crie uma tarefa diária com dois blocos obrigatórios: técnico e teórico. "
-        "A sequência deve ser estritamente lógica, sem pular fundamentos. "
+        "Crie uma lição diária completa, não um diagnóstico. "
+        "A lição deve ensinar com base conceitual consolidada, aplicação no braço da guitarra, exercício técnico, exercício teórico e revisão. "
+        "A sequência deve respeitar a ordem pedagógica indicada no curriculum. "
         "Nunca repita tópicos já presentes no histórico. "
-        "Se o histórico mostrar que o aluno ainda está no diagnóstico, comece fazendo perguntas objetivas para mapear técnica e teoria. "
-        "Cada bloco precisa conter: explicação clara, exemplo aplicado à guitarra, exercício de fixação e resultado esperado. "
-        "O bloco técnico também precisa indicar técnica trabalhada, posição das mãos, dedilhado ou palhetada, BPM inicial, progressão de velocidade e expectativa de uma semana. "
-        "O bloco teórico deve usar o braço da guitarra como referência visual sempre que fizer sentido."
+        "Cada lição precisa ensinar uma base clara, usar exemplos aplicados à guitarra e terminar com critérios de checagem do entendimento. "
+        "O bloco técnico deve indicar técnica, posição das mãos, palhetada ou dedilhado, BPM inicial, progressão e resultado esperado em uma semana. "
+        "O bloco teórico deve explicar o conceito, mostrar o mapa no braço da guitarra e propor fixação prática."
     )
 
     user = {
         "today": today,
         "current_task": current,
         "student_level": student_level,
+        "curriculum": curriculum,
         "history": history,
-        "pedagogical_sequence": [
-            "diagnóstico inicial",
-            "intervalos",
-            "escala maior",
-            "tríades",
-            "formação de acordes",
-            "campo harmônico maior",
-            "harmonização",
-            "modos"
-        ],
+        "lesson_requirements": {
+            "must_have": [
+                "objective",
+                "theory",
+                "guitar_map",
+                "application",
+                "technical",
+                "review",
+            ],
+            "style": "ensino claro, aplicado, sem superficialidade",
+        },
         "rules": {
             "no_repeat_topics": True,
             "do_not_advance_without_foundation": True,
-            "maintain_continuity": True
-        }
+            "maintain_continuity": True,
+        },
     }
 
     return [
@@ -123,17 +126,21 @@ def main() -> None:
 
     task.setdefault("generated_at", dt.datetime.now().astimezone().strftime("%Y-%m-%d"))
     task.setdefault("status", "pending")
-    task.setdefault("topic", "Nova tarefa")
-    task.setdefault("message", "Tarefa diária de guitarra")
+    task.setdefault("type", "lesson")
+    task.setdefault("topic", "Nova lição")
+    task.setdefault("message", "Lição diária de guitarra")
+    task.setdefault("lesson", {})
+    task.setdefault("curriculum_step", data.get("curriculum", {}).get("core_order", [None])[0])
 
     data["current_task"] = task
     data["history"] = history
     data["historical_topics"] = [item.get("topic") for item in history if item.get("topic")]
     data["student_level"] = task.get("student_level", data.get("student_level", {}))
     data["next_pedagogical_step"] = task.get("next_pedagogical_step", data.get("next_pedagogical_step", ""))
+    data["last_generation_mode"] = "lesson"
 
     save_tasks(data)
-    print("Nova tarefa gerada com sucesso.")
+    print("Nova lição gerada com sucesso.")
 
 
 if __name__ == "__main__":
