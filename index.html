@@ -170,6 +170,97 @@
       line-height: 1.6;
     }
 
+    .dialogue {
+      display: grid;
+      gap: 14px;
+      padding: 22px 24px 24px;
+    }
+
+    .chatbox {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(2, 6, 23, 0.34);
+      padding: 18px;
+      min-height: 220px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .chat-message {
+      max-width: 72ch;
+      padding: 14px 16px;
+      border-radius: 16px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .chat-message.teacher {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.20);
+      justify-self: start;
+    }
+
+    .chat-message.student {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.20);
+      justify-self: end;
+    }
+
+    .chat-message.system {
+      background: rgba(148, 163, 184, 0.10);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--muted);
+      justify-self: center;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    label.field {
+      display: grid;
+      gap: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(2, 6, 23, 0.38);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .stepper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .step {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(2, 6, 23, 0.26);
+      font-size: 0.88rem;
+    }
+
+    .step.active {
+      color: white;
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.18);
+    }
+
     .daily {
       display: grid;
       gap: 16px;
@@ -312,7 +403,9 @@
     @media (max-width: 640px) {
       .wrap { width: min(calc(100% - 20px), var(--max)); padding-top: 14px; }
       header.hero, .daily, .history, .panel-head { padding-left: 16px; padding-right: 16px; }
+      .dialogue { padding-left: 16px; padding-right: 16px; }
       .title { font-size: 2rem; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -351,15 +444,61 @@
     <section class="panel">
       <div class="panel-head">
         <div>
-          <h2>Tarefa do dia</h2>
-          <p class="note" id="dayNote">Carregando conteúdo do estudo...</p>
+          <h2>Diagnóstico inicial</h2>
+          <p class="note" id="diagnosticNote">Vamos descobrir onde você está hoje antes de montar a rotina.</p>
         </div>
         <div class="check-row">
-          <button class="primary" id="markStudiedBtn">Marcar como estudado</button>
-          <button class="ghost" id="refreshBtn">Atualizar conteúdo</button>
+          <button class="primary" id="startDiagnosticBtn">Começar diagnóstico</button>
+          <button class="ghost" id="resetDiagnosticBtn">Reiniciar diagnóstico</button>
         </div>
       </div>
 
+      <div class="dialogue">
+        <div class="stepper" id="stepper"></div>
+        <div class="chatbox" id="chatbox"></div>
+        <div class="form-grid">
+          <label class="field">
+            Técnica
+            <textarea id="techAnswer" placeholder="Ex.: alternate picking confortável até 100 BPM; sweep básico; bending com afinação razoável..."></textarea>
+          </label>
+          <label class="field">
+            Teoria
+            <textarea id="theoryAnswer" placeholder="Ex.: sei intervalos básicos, tríades maiores e menores, mas ainda me perco no campo harmônico..."></textarea>
+          </label>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            BPM de referência
+            <input id="bpmAnswer" type="text" placeholder="Ex.: 92 BPM em semicolcheias no alternate picking" />
+          </label>
+          <label class="field">
+            Objetivo principal
+            <select id="goalAnswer">
+              <option value="">Selecione</option>
+              <option value="tecnica">Melhorar técnica</option>
+              <option value="teoria">Corrigir teoria</option>
+              <option value="equilibrio">Equilibrar técnica e teoria</option>
+            </select>
+          </label>
+        </div>
+        <div class="check-row">
+          <button class="primary" id="sendAnswerBtn">Enviar resposta</button>
+          <button class="ghost" id="finishDiagnosticBtn">Fechar diagnóstico e gerar plano</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Plano de estudos ativo</h2>
+          <p class="note" id="planNote">O plano aparece depois que o diagnóstico é concluído.</p>
+        </div>
+        <div class="check-row">
+          <button class="ghost" id="refreshBtn">Atualizar conteúdo</button>
+        </div>
+      </div>
       <div class="daily" id="dailyContent">
         <div class="lesson">
           <div class="lesson-title">
@@ -376,8 +515,6 @@
           </div>
           <div class="content" id="theoryBlock"></div>
         </div>
-
-        <div class="feedback" id="feedback"></div>
       </div>
     </section>
 
@@ -397,8 +534,101 @@
     const GH_OWNER = 'SEU_USUARIO';
     const GH_REPO = 'SEU_REPOSITORIO';
     const GH_WORKFLOW_ID = 'mark_studied.yml';
+    const STORAGE_KEY = 'guitarra_diagnostico_v1';
+
+    const diagnosticSteps = [
+      '1. Técnica atual',
+      '2. BPM de referência',
+      '3. Conhecimento teórico',
+      '4. Objetivo principal',
+      '5. Fechar diagnóstico'
+    ];
+
+    const defaultConversation = [
+      { role: 'teacher', text: 'Olá. Antes de qualquer rotina, eu preciso entender exatamente onde você está hoje.' },
+      { role: 'teacher', text: 'Responda com sinceridade: quais técnicas você realmente domina, quais ainda travam e em que BPM você se sente confortável?' },
+      { role: 'teacher', text: 'Depois disso, vamos olhar para intervalos, escala maior, tríades, acordes, campo harmônico e modos.' }
+    ];
 
     const el = (id) => document.getElementById(id);
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+          conversation: defaultConversation,
+          answers: [],
+          complete: false,
+          level: null,
+          step: 0
+        };
+      } catch {
+        return {
+          conversation: defaultConversation,
+          answers: [],
+          complete: false,
+          level: null,
+          step: 0
+        };
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function currentPrompt(step) {
+      const prompts = [
+        'Primeiro, me diga quais técnicas você domina com segurança e quais ainda executa com dificuldade.',
+        'Agora informe o BPM aproximado que você sustenta em alternate picking e escalas.',
+        'O que você sabe hoje sobre intervalos, escala maior, tríades, acordes, campo harmônico e modos?',
+        'Qual é sua prioridade principal neste momento: técnica, teoria ou equilíbrio entre as duas?',
+        'Ótimo. Vou montar seu ponto de partida a partir dessas respostas.'
+      ];
+      return prompts[step] || prompts[prompts.length - 1];
+    }
+
+    function deriveLevel(state) {
+      const tech = state.answers.find((a) => a.kind === 'tech')?.value || '';
+      const theory = state.answers.find((a) => a.kind === 'theory')?.value || '';
+      const bpm = state.answers.find((a) => a.kind === 'bpm')?.value || '';
+      const goal = state.answers.find((a) => a.kind === 'goal')?.value || '';
+      return {
+        summary: tech && theory ? 'Diagnóstico concluído: perfil parcialmente mapeado' : 'Diagnóstico em andamento',
+        technical_stage: tech || 'aguardando resposta técnica',
+        theory_stage: theory || 'aguardando resposta teórica',
+        reference_bpm: bpm || 'não informado',
+        focus: goal || 'não definido'
+      };
+    }
+
+    function renderStepper(state) {
+      el('stepper').innerHTML = diagnosticSteps.map((label, index) => {
+        const active = index <= state.step ? 'active' : '';
+        return `<span class="step ${active}">${label}</span>`;
+      }).join('');
+    }
+
+    function renderConversation(state) {
+      el('chatbox').innerHTML = state.conversation.map((msg) => {
+        return `<div class="chat-message ${msg.role}">${escapeHtml(msg.text)}</div>`;
+      }).join('');
+    }
+
+    function updateDiagnosticUI() {
+      const state = loadState();
+      renderStepper(state);
+      renderConversation(state);
+      el('diagnosticNote').textContent = state.complete
+        ? 'Diagnóstico concluído. Você pode revisar suas respostas ou recomeçar se quiser.'
+        : currentPrompt(state.step);
+      const level = state.level || deriveLevel(state);
+      el('studentLevel').textContent = level.summary || '-';
+      el('nextStep').textContent = level.focus || '-';
+      el('planNote').textContent = state.complete
+        ? 'A rotina abaixo foi montada com base no diagnóstico salvo localmente neste navegador.'
+        : 'Conclua o diagnóstico para liberar um plano inicial personalizado.';
+      document.getElementById('dailyContent').style.opacity = state.complete ? '1' : '0.55';
+    }
 
     function escapeHtml(text) {
       return String(text)
@@ -453,6 +683,7 @@
 
     async function refreshUI() {
       const data = await loadTasks();
+      const state = loadState();
       const current = data.current_task || {};
       const history = data.history || [];
       const level = data.student_level || {};
@@ -473,57 +704,90 @@
       if (level.technical_stage) chips.push(`Técnica: ${level.technical_stage}`);
       if (level.theory_stage) chips.push(`Teoria: ${level.theory_stage}`);
       if (current.status) chips.push(`Status: ${current.status === 'studied' ? 'estudado' : 'pendente'}`);
+      if (state.complete) chips.push('Diagnóstico salvo');
       el('chips').innerHTML = chips.map(c => `<span class="chip">${escapeHtml(c)}</span>`).join('');
+
+      updateDiagnosticUI();
     }
 
-    async function markStudied() {
+    function sendAnswer() {
+      const state = loadState();
+      const tech = el('techAnswer').value.trim();
+      const theory = el('theoryAnswer').value.trim();
+      const bpm = el('bpmAnswer').value.trim();
+      const goal = el('goalAnswer').value.trim();
       const feedback = el('feedback');
-      const button = el('markStudiedBtn');
-      feedback.className = 'feedback warn';
-      feedback.textContent = 'Aguardando confirmação do GitHub Actions...';
 
-      try {
-        if (!GH_OWNER || GH_OWNER === 'SEU_USUARIO' || !GH_REPO || GH_REPO === 'SEU_REPOSITORIO') {
-          throw new Error('Defina GH_OWNER e GH_REPO no index.html antes de publicar.');
-        }
-
-        const token = localStorage.getItem('gh_token');
-        if (!token) {
-          throw new Error('Configure um token de acesso no localStorage com a chave gh_token.');
-        }
-
-        button.disabled = true;
-        const response = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_ID}/dispatches`, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/vnd.github+json',
-            'Authorization': `Bearer ${token}`,
-            'X-GitHub-Api-Version': '2022-11-28',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ref: 'main',
-            inputs: {
-              action: 'mark_studied'
-            }
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`GitHub API respondeu com status ${response.status}`);
-        }
-
-        feedback.className = 'feedback success';
-        feedback.textContent = 'Status enviado. A próxima geração será feita pelo workflow automaticamente.';
-      } catch (error) {
+      if (!tech && !theory && !bpm && !goal) {
         feedback.className = 'feedback warn';
-        feedback.textContent = error.message;
-      } finally {
-        button.disabled = false;
+        feedback.textContent = 'Escreva alguma resposta antes de enviar.';
+        return;
       }
+
+      if (!tech || !theory || !bpm || !goal) {
+        feedback.className = 'feedback warn';
+        feedback.textContent = 'Para fechar o diagnóstico, eu preciso das quatro respostas: técnica, BPM, teoria e objetivo.';
+      } else {
+        feedback.className = 'feedback success';
+        feedback.textContent = 'Resposta registrada. Continue até concluir o diagnóstico.';
+      }
+
+      if (tech) state.answers.push({ kind: 'tech', value: tech });
+      if (bpm) state.answers.push({ kind: 'bpm', value: bpm });
+      if (theory) state.answers.push({ kind: 'theory', value: theory });
+      if (goal) state.answers.push({ kind: 'goal', value: goal });
+
+      state.conversation.push({ role: 'student', text: `Técnica: ${tech || '-'}\nBPM: ${bpm || '-'}\nTeoria: ${theory || '-'}\nObjetivo: ${goal || '-'}` });
+      state.step = Math.min(state.step + 1, diagnosticSteps.length - 1);
+      state.level = deriveLevel(state);
+      saveState(state);
+      updateDiagnosticUI();
     }
 
-    el('markStudiedBtn').addEventListener('click', markStudied);
+    function finishDiagnostic() {
+      const state = loadState();
+      const feedback = el('feedback');
+      const tech = el('techAnswer').value.trim();
+      const theory = el('theoryAnswer').value.trim();
+      const bpm = el('bpmAnswer').value.trim();
+      const goal = el('goalAnswer').value.trim();
+
+      if (!tech || !theory || !bpm || !goal) {
+        feedback.className = 'feedback warn';
+        feedback.textContent = 'Ainda faltam respostas para fechar o diagnóstico.';
+        return;
+      }
+
+      state.complete = true;
+      state.level = deriveLevel(state);
+      state.conversation.push({
+        role: 'system',
+        text: 'Diagnóstico fechado. A partir daqui, a rotina de estudos passa a seguir o ponto de partida definido pelas respostas.'
+      });
+      saveState(state);
+      feedback.className = 'feedback success';
+      feedback.textContent = 'Diagnóstico concluído. O plano foi liberado.';
+      updateDiagnosticUI();
+    }
+
+    function resetDiagnostic() {
+      localStorage.removeItem(STORAGE_KEY);
+      el('techAnswer').value = '';
+      el('theoryAnswer').value = '';
+      el('bpmAnswer').value = '';
+      el('goalAnswer').value = '';
+      el('feedback').textContent = '';
+      updateDiagnosticUI();
+    }
+
+    el('startDiagnosticBtn').addEventListener('click', () => {
+      el('techAnswer').focus();
+      el('feedback').className = 'feedback';
+      el('feedback').textContent = 'Responda com calma. Quanto mais preciso, melhor o plano.';
+    });
+    el('sendAnswerBtn').addEventListener('click', sendAnswer);
+    el('finishDiagnosticBtn').addEventListener('click', finishDiagnostic);
+    el('resetDiagnosticBtn').addEventListener('click', resetDiagnostic);
     el('refreshBtn').addEventListener('click', () => refreshUI().catch((error) => {
       el('feedback').className = 'feedback warn';
       el('feedback').textContent = error.message;
